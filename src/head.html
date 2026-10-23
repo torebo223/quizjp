@@ -1,0 +1,74 @@
+<title>ご当地ピン</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap">
+<style>
+/* 藍色の海図に生成り色の列島。左に大きな地図、右に出題カード（狭い画面では下） */
+:root{
+  --sea:#17324d; --sea-line:#24496b; --land:#e9e2cc; --land-hi:#f6d36b; --city-hi:#f2a53a; --border:#8d846a; --muni:#c9bf9f;
+  --panel:#0f2236; --ink:#eef1f4; --muted:#9fb2c4; --pin:#f2a53a; --answer:#5fd1a1; --line:#ffffff; --hint:#2a5379;
+  --display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--panel);color:var(--ink);font-family:var(--body);font-size:15px;overflow:hidden}
+.app{height:100%;display:grid;grid-template-columns:1fr 360px;grid-template-rows:auto 1fr}
+header{grid-column:1/-1;display:flex;align-items:center;gap:20px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--sea-line)}
+header h1{font-family:var(--display);font-weight:400;font-size:22px;margin:0;letter-spacing:.04em}
+header .genre{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+header select{font-family:var(--body);font-size:14px;background:var(--panel);color:var(--ink);border:1px solid var(--sea-line);border-radius:6px;padding:4px 8px}
+header .stat{margin-left:auto;display:flex;gap:18px;font-variant-numeric:tabular-nums;color:var(--muted)}
+header .stat b{color:var(--ink);font-size:18px;margin-left:6px}
+.mapwrap{position:relative;background:var(--sea);overflow:hidden;min-width:0;cursor:crosshair;touch-action:none}
+.mapwrap.dragging{cursor:grabbing}
+svg#map{width:100%;height:100%;display:block;user-select:none}
+.muni{fill:var(--land);stroke:var(--muni);stroke-width:0;vector-effect:non-scaling-stroke}
+svg.near .muni{stroke-width:.6}
+.muni.hit{fill:var(--city-hi)}
+.pref{fill:none;stroke:var(--border);stroke-width:.8;vector-effect:non-scaling-stroke;pointer-events:none}
+.pref.hit{fill:var(--land-hi);fill-opacity:.55}
+.grid{stroke:var(--sea-line);stroke-width:1;vector-effect:non-scaling-stroke}
+.zoom{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:38px;height:38px;border-radius:8px;border:1px solid var(--sea-line);background:var(--panel);color:var(--ink);font-size:20px;cursor:pointer}
+.hint{position:absolute;left:12px;bottom:12px;color:var(--muted);font-size:12px;background:color-mix(in srgb,var(--panel) 80%,transparent);padding:6px 10px;border-radius:6px;display:flex;flex-direction:column;gap:2px;max-width:calc(100% - 90px)}
+.hint small{font-size:10px;opacity:.8}
+aside{padding:24px 22px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;border-left:1px solid var(--sea-line)}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);display:flex;gap:8px;align-items:center}
+.cat{border:1px solid var(--muted);border-radius:99px;padding:1px 9px;letter-spacing:.04em;color:var(--ink)}
+.product{font-family:var(--display);font-weight:400;font-size:32px;line-height:1.25;margin:0;text-wrap:balance}
+.question{color:var(--muted);line-height:1.7;margin:0}
+.hints{display:flex;flex-direction:column;gap:8px}
+.hints button{font-family:var(--body);text-align:left;font-size:14px;padding:10px 12px;border-radius:8px;border:1px dashed var(--muted);background:transparent;color:var(--muted);cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+.hints button:disabled{cursor:default}
+.hints button.open{border-style:solid;border-color:var(--hint);background:var(--hint);color:var(--ink)}
+.hints button span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+button.main{font-family:var(--body);font-weight:700;font-size:17px;padding:14px;border-radius:10px;border:0;background:var(--pin);color:#1b1407;cursor:pointer}
+button.main:disabled{opacity:.35;cursor:default}
+button:focus-visible{outline:3px solid var(--line);outline-offset:2px}
+.result{display:flex;flex-direction:column;gap:10px}
+.big{font-family:var(--display);font-size:40px;font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--sea-line);padding-bottom:8px}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{display:inline-block;background:var(--answer);color:#0b2a1e;font-weight:700;font-size:13px;padding:3px 10px;border-radius:99px}
+.tag.city{background:var(--city-hi);color:#1b1407}
+.memo{line-height:1.7;color:var(--muted);margin:0}
+ol.sum{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px;font-variant-numeric:tabular-nums}
+ol.sum li span{color:var(--muted)}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
+  aside{border-left:0;border-top:1px solid var(--sea-line);max-height:50vh;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .product{font-size:24px} header{gap:10px;flex-wrap:wrap} header .stat{gap:10px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="app">
+  <header><h1>ご当地ピン</h1><label class="genre">ジャンル<select id="genre"><option value="all">すべて</option><option value="特産品">特産品</option><option value="建造物">建造物</option><option value="オブジェクト">ご当地もの</option><option value="アニメ">アニメ・漫画</option></select></label><div class="stat"><span>問題<b id="round">1/5</b></span><span>得点<b id="total">0</b></span></div></header>
+  <div class="mapwrap" id="wrap">
+    <svg id="map" xmlns="http://www.w3.org/2000/svg"><g id="grid"></g><g id="munis"></g><g id="prefs"></g><g id="marks"></g></svg>
+    <div class="zoom"><button id="zin" aria-label="拡大">＋</button><button id="zout" aria-label="縮小">－</button><button id="zreset" aria-label="全体表示" style="font-size:13px">全</button></div>
+    <div class="hint"><span>ホイールで拡大・ドラッグで移動・クリックでピン。拡大すると市町村の境界が出ます</span><small>出典：国土数値情報（行政区域データ）（国土交通省）を加工して作成</small></div>
+  </div>
+  <aside id="panel"></aside>
+</div>
