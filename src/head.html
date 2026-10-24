@@ -56,6 +56,27 @@ button:focus-visible{outline:3px solid var(--line);outline-offset:2px}
 .memo{line-height:1.7;color:var(--muted);margin:0}
 ol.sum{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px;font-variant-numeric:tabular-nums}
 ol.sum li span{color:var(--muted)}
+header select:disabled{opacity:.4}
+header #book{padding:5px 14px}
+header #timer.low b{color:var(--pin)}
+button.sub{font-family:var(--body);font-size:14px;padding:10px;border-radius:10px;border:1px solid var(--muted);background:transparent;color:var(--ink);cursor:pointer}
+button.sub.danger{border-color:transparent;color:var(--muted);font-size:12px;padding:6px}
+.cat.mode{border-color:var(--pin);color:var(--pin)}
+.note{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+.big small{font-size:20px;color:var(--muted)}
+/* 図鑑を開いている間は、取った場所だけを塗る */
+svg.book .muni.hit,svg.book .pref.hit{fill:var(--land)}
+svg.book .pref.hit{fill:none}
+svg.book .pref.done{fill:var(--land-hi);fill-opacity:.55}
+svg.book .muni.done{fill:var(--city-hi)}
+.bookcat{font-size:14px;margin:6px 0 0;display:flex;justify-content:space-between;color:var(--ink)}
+.bookcat span{color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+.cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.card{border:1px solid var(--sea-line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--muted);min-width:0}
+.card b{color:var(--ink);font-size:13px;overflow-wrap:anywhere}
+.card .best{font-variant-numeric:tabular-nums;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.card .tag{font-style:normal;font-size:10px;padding:1px 6px}
+.card.unseen{border-style:dashed;opacity:.6}
 @media (max-width:760px){
   .app{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
   aside{border-left:0;border-top:1px solid var(--sea-line);max-height:50vh;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -64,7 +85,7 @@ ol.sum li span{color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <div class="app">
-  <header><h1>ご当地ピン</h1><label class="genre">ジャンル<select id="genre"><option value="all">すべて</option><option value="特産品">特産品</option><option value="建造物">建造物</option><option value="オブジェクト">ご当地もの</option><option value="アニメ">アニメ・漫画</option></select></label><div class="stat"><span>問題<b id="round">1/5</b></span><span>得点<b id="total">0</b></span></div></header>
+  <header><h1>ご当地ピン</h1><label class="genre">ジャンル<select id="genre"><option value="all">すべて</option><option value="特産品">特産品</option><option value="建造物">建造物</option><option value="オブジェクト">ご当地もの</option><option value="アニメ">アニメ・漫画</option></select></label><label class="genre">地方<select id="region"><option value="all">すべて</option><option>北海道・東北</option><option>関東</option><option>中部</option><option>近畿</option><option>中国・四国</option><option>九州・沖縄</option></select></label><label class="genre">モード<select id="mode"><option value="normal">ふつう</option><option value="time">タイムアタック</option><option value="daily">デイリー</option></select></label><button class="sub" id="book">図鑑</button><div class="stat"><span id="timer" hidden>残り<b id="sec">20</b>秒</span><span>問題<b id="round">1/5</b></span><span>得点<b id="total">0</b></span></div></header>
   <div class="mapwrap" id="wrap">
     <svg id="map" xmlns="http://www.w3.org/2000/svg"><g id="grid"></g><g id="munis"></g><g id="prefs"></g><g id="marks"></g></svg>
     <div class="zoom"><button id="zin" aria-label="拡大">＋</button><button id="zout" aria-label="縮小">－</button><button id="zreset" aria-label="全体表示" style="font-size:13px">全</button></div>
