@@ -1,0 +1,6 @@
+{
+  "extraKnownMarketplaces": {
+    "personal-claude": { "source": { "source": "github", "repo": "torebo223/personal-claude" } }
+  },
+  "enabledPlugins": { "pkb@personal-claude": true }
+}
